@@ -1,0 +1,72 @@
+/* Ajustes propios sobre Tufte CSS. Todo lo demás lo hereda de tufte.css */
+
+/* La web es siempre clara: así el modo oscuro del sistema o del navegador
+   no la reinterpreta por su cuenta. */
+:root {
+    color-scheme: light;
+}
+
+body {
+    /* Tufte usa un crema (#fffff8); aquí lo dejamos en blanco puro.
+       Borra esta línea si prefieres recuperar el fondo original. */
+    background-color: #fff;
+    color: #111;
+}
+
+/* Tufte v1.8 trae su propio modo oscuro (tufte.css:60 y tufte.css:260) que aquí
+   estorbaba: al tener nosotros el fondo en blanco, dejaba el texto en gris claro
+   (sin contraste) y pintaba el halo del subrayado de los enlaces en negro, que es
+   lo que hacía que el correo y el teléfono pareciesen duplicados. Lo anulamos. */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #fff;
+        color: #111;
+    }
+}
+
+/* Halo del subrayado Tufte en blanco, igual que el fondo, en claro y en oscuro. */
+a:link,
+.tufte-underline,
+.hover-tufte-underline:hover {
+    text-shadow: 0.03em 0 #fff, -0.03em 0 #fff, 0 0.03em #fff, 0 -0.03em #fff, 0.06em 0 #fff, -0.06em 0 #fff, 0.09em 0 #fff, -0.09em 0 #fff, 0.12em 0 #fff, -0.12em 0 #fff, 0.15em 0 #fff, -0.15em 0 #fff;
+}
+
+/* La página tiene poco contenido: reducimos aires para que no haya que scrollear. */
+article {
+    padding: 5vh 0 3rem;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 2.8rem;
+}
+
+p.subtitle {
+    font-size: 1.6rem;
+    color: #222;
+}
+
+h2 {
+    font-size: 1.6rem;
+    margin-top: 2.4rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Lista de contacto: sin viñetas, icono + dato en una línea. */
+ul.contacto {
+    list-style: none;
+    -webkit-padding-start: 0;
+    padding-left: 0;
+}
+
+ul.contacto li:not(:first-child) {
+    margin-top: 0.5rem;
+}
+
+.icono {
+    width: 1.05em;
+    height: 1.05em;
+    vertical-align: -0.14em;
+    margin-right: 0.5rem;
+    color: #444;
+}
