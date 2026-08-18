@@ -8,7 +8,7 @@
       name="description"
       content="Sara Montecatine, psicóloga sanitaria. Terapia presencial en Sevilla y online. Un espacio seguro para explorar lo que te preocupa y avanzar hacia lo que te importa."
     />
-    <meta name="theme-color" content="#faf8fd" />
+    <meta name="theme-color" content="#f7f2fb" />
     <link
       rel="preload"
       href="et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff"
@@ -22,7 +22,9 @@
   <body>
     <a class="saltar" href="#quien-soy">Saltar al contenido</a>
 
-    <p class="marca" id="marca" aria-hidden="true">Sara Montecatine</p>
+    <div class="cabecera-flotante" id="marca" aria-hidden="true">
+      <span class="cabecera-texto">Sara Montecatine</span>
+    </div>
 
     <button
       class="hamburguesa"
@@ -89,11 +91,6 @@
             </picture>
           </figure>
         </div>
-
-        <div class="aviso-scroll" aria-hidden="true">
-          <span>Desliza</span>
-          <span class="aviso-linea"></span>
-        </div>
       </section>
 
       <!-- 02 · Quién soy -->
@@ -132,73 +129,71 @@
         </div>
       </section>
 
-      <!-- Banda ilustrada -->
-      <section class="banda" aria-hidden="true">
-        <div class="banda-marco">
-          <picture>
-            <source srcset="img/arte2.webp" type="image/webp" />
-            <img
-              src="img/arte2.jpg"
-              width="736"
-              height="734"
-              alt=""
-              loading="lazy"
-              data-parallax="-0.12"
-            />
-          </picture>
-        </div>
-      </section>
-
       <!-- 03 · Cómo trabajo -->
       <section class="seccion tono" id="como-trabajo">
-        <div class="contenedor dos-columnas invertida">
-          <div class="columna-texto">
-            <p class="antetitulo reveal">03 &mdash; Cómo trabajo</p>
-            <h2 class="reveal">Un espacio para mirar con calma</h2>
-            <p class="reveal">
-              Cada proceso empieza por entender qué te trae hasta aquí y qué te
-              gustaría que fuese distinto. A partir de ahí construimos juntas un
-              camino que tenga sentido para ti, sin prisa y sin recetas
-              cerradas.
-            </p>
+        <div class="escenario-pasos" id="escenario-pasos">
+          <div class="escenario-pin">
+            <div class="contenedor dos-columnas invertida">
+              <div class="columna-texto">
+                <p class="antetitulo reveal">03 &mdash; Cómo trabajo</p>
+                <h2 class="reveal">Un espacio para mirar con calma</h2>
+                <p class="intro reveal">
+                  Cada proceso empieza por entender qué te trae hasta aquí y
+                  qué te gustaría que fuese distinto. A partir de ahí
+                  construimos juntas un camino que tenga sentido para ti, sin
+                  prisa y sin recetas cerradas.
+                </p>
 
-            <ol class="pasos">
-              <li class="reveal">
-                <h3>Primer contacto</h3>
-                <p>
-                  Una toma de contacto para conocernos, contarme qué te preocupa
-                  y resolver tus dudas antes de decidir nada.
-                </p>
-              </li>
-              <li class="reveal">
-                <h3>Entender lo que pasa</h3>
-                <p>
-                  Dedicamos las primeras sesiones a comprender tu historia y tu
-                  contexto, y a ordenar juntas lo que hoy se vive como confuso.
-                </p>
-              </li>
-              <li class="reveal">
-                <h3>Avanzar hacia lo que importa</h3>
-                <p>
-                  Trabajamos con herramientas ajustadas a tu momento, orientadas
-                  a lo que de verdad es valioso para ti en tu vida.
-                </p>
-              </li>
-            </ol>
+                <ol class="pasos-pin" id="pasos-pin">
+                  <li class="paso-pin" data-indice="0">
+                    <span class="paso-pin-num">01</span>
+                    <h3>Primer contacto</h3>
+                    <p>
+                      Una toma de contacto para conocernos, contarme qué te
+                      preocupa y resolver tus dudas antes de decidir nada.
+                    </p>
+                  </li>
+                  <li class="paso-pin" data-indice="1">
+                    <span class="paso-pin-num">02</span>
+                    <h3>Entender lo que pasa</h3>
+                    <p>
+                      Dedicamos las primeras sesiones a comprender tu historia
+                      y tu contexto, y a ordenar juntas lo que hoy se vive
+                      como confuso.
+                    </p>
+                  </li>
+                  <li class="paso-pin" data-indice="2">
+                    <span class="paso-pin-num">03</span>
+                    <h3>Avanzar hacia lo que importa</h3>
+                    <p>
+                      Trabajamos con herramientas ajustadas a tu momento,
+                      orientadas a lo que de verdad es valioso para ti en tu
+                      vida.
+                    </p>
+                  </li>
+                </ol>
+
+                <div class="pasos-indicador" aria-hidden="true">
+                  <span data-indice="0"></span>
+                  <span data-indice="1"></span>
+                  <span data-indice="2"></span>
+                </div>
+              </div>
+
+              <figure class="retrato ilustracion reveal">
+                <picture>
+                  <source srcset="img/arte3.webp" type="image/webp" />
+                  <img
+                    src="img/arte3.jpg"
+                    width="465"
+                    height="576"
+                    alt="Ilustración de una cabeza con habitaciones dentro, cada una con una escena distinta"
+                    loading="lazy"
+                  />
+                </picture>
+              </figure>
+            </div>
           </div>
-
-          <figure class="retrato ilustracion reveal">
-            <picture>
-              <source srcset="img/arte3.webp" type="image/webp" />
-              <img
-                src="img/arte3.jpg"
-                width="465"
-                height="576"
-                alt="Ilustración de una cabeza con habitaciones dentro, cada una con una escena distinta"
-                loading="lazy"
-              />
-            </picture>
-          </figure>
         </div>
       </section>
 
@@ -259,52 +254,67 @@
 
       <!-- 05 · Contacto -->
       <section class="seccion tono" id="contacto">
-        <div class="contenedor contacto-caja">
-          <p class="antetitulo reveal">05 &mdash; Contacto</p>
-          <h2 class="reveal">¿Damos el primer paso?</h2>
-          <p class="reveal">
-            Escríbeme y hablamos sin compromiso de lo que necesitas y de cómo
-            podemos trabajarlo.
-          </p>
+        <div class="contenedor dos-columnas">
+          <figure class="retrato ilustracion reveal">
+            <picture>
+              <source srcset="img/arte2.webp" type="image/webp" />
+              <img
+                src="img/arte2.jpg"
+                width="736"
+                height="734"
+                alt="Ilustración de una persona nadando sobre un mar lleno de peces de colores"
+                loading="lazy"
+              />
+            </picture>
+          </figure>
 
-          <ul class="contacto-datos">
-            <li class="reveal">
-              <svg
-                class="icono"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
-                <path d="M3 6l9 7 9-7" />
-              </svg>
-              <a href="mailto:saramontecatine.psi@gmail.com"
-                >saramontecatine.psi@gmail.com</a
-              >
-            </li>
-            <li class="reveal">
-              <svg
-                class="icono"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" />
-                <circle cx="12" cy="10" r="2.6" />
-              </svg>
-              <span>Terapia presencial en Sevilla y online</span>
-            </li>
-          </ul>
+          <div class="columna-texto">
+            <p class="antetitulo reveal">05 &mdash; Contacto</p>
+            <h2 class="reveal">¿Damos el primer paso?</h2>
+            <p class="reveal">
+              Escríbeme y hablamos sin compromiso de lo que necesitas y de
+              cómo podemos trabajarlo.
+            </p>
+
+            <ul class="contacto-datos">
+              <li class="reveal">
+                <svg
+                  class="icono"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
+                  <path d="M3 6l9 7 9-7" />
+                </svg>
+                <a href="mailto:saramontecatine.psi@gmail.com"
+                  >saramontecatine.psi@gmail.com</a
+                >
+              </li>
+              <li class="reveal">
+                <svg
+                  class="icono"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" />
+                  <circle cx="12" cy="10" r="2.6" />
+                </svg>
+                <span>Terapia presencial en Sevilla y online</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
     </main>

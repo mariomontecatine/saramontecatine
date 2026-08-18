@@ -46,7 +46,7 @@
 :root {
   color-scheme: light;
 
-  --papel: #faf9fd; /* fondo general: lavanda casi blanco */
+  --papel: #f7f2fb; /* fondo general: lavanda muy claro */
   --papel-tono: #f2eef9; /* bandas alternas, un punto más lavanda */
   --lavanda: #e6dff2;
   --lavanda-fuerte: #cabfe0;
@@ -181,8 +181,7 @@ a:hover {
   margin-bottom: 0.9rem;
 }
 
-.columna-texto p,
-.contacto-caja p {
+.columna-texto p {
   max-width: var(--columna);
   color: var(--tinta-suave);
 }
@@ -193,29 +192,53 @@ a:hover {
   margin-bottom: 0;
 }
 
-/* ---------- Marca y menú hamburguesa ---------- */
+/* ---------- Cabecera flotante y menú hamburguesa ---------- */
 
-.marca {
+/* Barra fija que aparece al dejar la portada. El fondo combina un
+   degradado (más opaco arriba) con desenfoque, para que el texto que
+   pasa por debajo se atenúe progresivamente y la cabecera se pueda
+   leer siempre, sea cual sea el contenido que tenga detrás. */
+.cabecera-flotante {
   position: fixed;
-  top: 1.9rem;
-  left: 2rem;
+  inset: 0 0 auto 0;
   z-index: 90;
-  margin: 0;
+  height: clamp(4.5rem, 4rem + 2vw, 5.5rem);
+  display: flex;
+  align-items: center;
+  padding-inline: clamp(1.5rem, 4vw, 2.5rem);
+  background: linear-gradient(
+    to bottom,
+    var(--papel) 0%,
+    color-mix(in srgb, var(--papel) 70%, transparent) 65%,
+    transparent 100%
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 55%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  opacity: 0;
+  transform: translateY(-0.6rem);
+  transition:
+    opacity 0.6s var(--paso),
+    transform 0.6s var(--paso);
+  pointer-events: none;
+}
+
+.cabecera-flotante.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.cabecera-texto {
   font-size: 1rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--tinta-suave);
-  opacity: 0;
-  transform: translateY(-0.5rem);
-  transition:
-    opacity 0.7s var(--paso),
-    transform 0.7s var(--paso);
-  pointer-events: none;
-}
-
-.marca.visible {
-  opacity: 1;
-  transform: none;
 }
 
 .hamburguesa {
@@ -403,43 +426,6 @@ a:hover {
   mix-blend-mode: multiply;
 }
 
-.aviso-scroll {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-
-.aviso-linea {
-  width: 1px;
-  height: 3.5rem;
-  background: linear-gradient(var(--lavanda-fuerte), transparent);
-  transform-origin: top;
-  animation: bajar 2.8s ease-in-out infinite;
-}
-
-@keyframes bajar {
-  0% {
-    transform: scaleY(0.2);
-    opacity: 0;
-  }
-  35% {
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 0;
-  }
-}
-
 /* ---------- Dos columnas con imagen fija ---------- */
 
 .dos-columnas {
@@ -453,12 +439,6 @@ a:hover {
   grid-template-columns: 1.1fr 0.9fr;
 }
 
-/* La imagen se queda quieta mientras el texto sigue subiendo. */
-.retrato {
-  position: sticky;
-  top: max(12vh, 6rem);
-}
-
 .retrato img {
   width: 100%;
 }
@@ -467,60 +447,143 @@ a:hover {
   mix-blend-mode: multiply;
 }
 
-.pasos {
+/* Solo la foto de "Quién soy" se queda quieta mientras el texto sigue
+   subiendo: en "Cómo trabajo" y "Contacto" la imagen es más corta que su
+   columna de texto y quedaba pegada solo un instante, como un tirón. */
+#quien-soy .retrato {
+  position: sticky;
+  top: max(12vh, 6rem);
+}
+
+/* ---------- 03 · Escenario de pasos fijado ---------- */
+
+/* Sin JS (o con "menos movimiento") los tres pasos se leen seguidos, sin
+   fijar la sección ni animar nada: esta es la base accesible por defecto. */
+.escenario-pasos {
+  position: relative;
+}
+
+.escenario-pin {
+  display: flex;
+  align-items: center;
+}
+
+.escenario-pin > .contenedor {
+  width: min(100% - 2.5rem, var(--ancho));
+}
+
+.pasos-pin {
   list-style: none;
   margin: 2.8rem 0 0;
   padding: 0;
-  counter-reset: paso;
+  display: flex;
+  flex-direction: column;
+  gap: 2.8rem;
 }
 
-.pasos li {
-  position: relative;
-  padding-left: 3.2rem;
-  counter-increment: paso;
-}
-
-.pasos li + li {
-  margin-top: 2.2rem;
-}
-
-.pasos li::before {
-  content: counter(paso, decimal-leading-zero);
-  position: absolute;
-  left: 0;
-  top: 0.1em;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: var(--acento);
-}
-
-.pasos p {
-  margin-bottom: 0;
-  color: var(--tinta-suave);
+.paso-pin {
   max-width: 30rem;
 }
 
-/* ---------- Banda ilustrada ---------- */
-
-.banda {
-  overflow: hidden;
-  padding-block: 2rem;
+.paso-pin-num {
+  display: block;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--acento);
+  margin-bottom: 0.4rem;
 }
 
-.banda-marco {
-  width: min(100% - 2.5rem, 860px);
+.paso-pin p {
+  margin-bottom: 0;
+  color: var(--tinta-suave);
+}
+
+.pasos-indicador {
+  display: none;
+}
+
+/* Con JS activo (y sin pedir menos movimiento) la sección se fija en
+   pantalla mientras se recorre: cada paso entra desde abajo y el
+   anterior sube y se desvanece, hasta soltar el scroll al llegar al 03. */
+/* Alto total del tramo fijado. Restándole la pantalla (100vh) queda el
+   recorrido que se reparte entre los tres pasos: 360 - 100 = 260vh, es
+   decir unas 0,87 pantallas de scroll por paso. Súbelo si quieres que
+   haya que deslizar aún más para pasar de uno a otro. */
+html.js-activo:not(.motion-reducido) .escenario-pasos {
+  height: 360vh;
+}
+
+html.js-activo:not(.motion-reducido) .escenario-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* La ilustración se queda quieta al lado de los pasos; la acotamos para
+   que quepa entera dentro de la pantalla fijada. */
+html.js-activo:not(.motion-reducido) #como-trabajo .dos-columnas {
+  align-items: center;
+}
+
+html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
+  max-height: 60svh;
+  width: auto;
   margin-inline: auto;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border-radius: var(--radio);
 }
 
-.banda-marco img {
-  width: 100%;
-  height: 128%;
-  object-fit: cover;
-  object-position: center 42%;
-  will-change: transform;
+/* Alto del hueco donde se relevan los tres pasos: se reserva el sitio del
+   más largo para que el bloque no dé saltos al cambiar de uno a otro. */
+html.js-activo:not(.motion-reducido) .pasos-pin {
+  position: relative;
+  height: clamp(12rem, 24svh, 15rem);
+}
+
+html.js-activo:not(.motion-reducido) .paso-pin {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition:
+    opacity 0.6s var(--paso),
+    transform 0.6s var(--paso);
+  pointer-events: none;
+}
+
+html.js-activo:not(.motion-reducido) .paso-pin.activo {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+html.js-activo:not(.motion-reducido) .paso-pin.salido {
+  opacity: 0;
+  transform: translateY(-2.5rem);
+}
+
+html.js-activo:not(.motion-reducido) .pasos-indicador {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 2.5rem;
+}
+
+html.js-activo:not(.motion-reducido) .pasos-indicador span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--lavanda-fuerte);
+  transition:
+    background-color 0.4s var(--paso),
+    transform 0.4s var(--paso);
+}
+
+html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
+  background: var(--acento);
+  transform: scale(1.3);
 }
 
 /* ---------- 04 · Áreas ---------- */
@@ -550,10 +613,6 @@ a:hover {
 }
 
 /* ---------- 05 · Contacto ---------- */
-
-.contacto-caja {
-  text-align: left;
-}
 
 .contacto-datos {
   list-style: none;
@@ -657,26 +716,54 @@ a:hover {
     order: -1;
   }
 
-  /* En móvil la imagen no se queda fija: molesta más que suma. */
   .retrato {
-    position: static;
     max-width: 26rem;
+  }
+
+  /* En móvil la foto tampoco se queda fija: molesta más que suma. */
+  #quien-soy .retrato {
+    position: static;
   }
 
   .dos-columnas.invertida .retrato {
     order: -1;
   }
 
-  .aviso-scroll {
+  .cabecera-flotante {
     display: none;
   }
 
-  .marca {
+  /* En móvil se apilan imagen y texto, y ya no caben en una pantalla
+     fijada: se cortarían. Volvemos a la lista corrida de los tres pasos. */
+  html.js-activo:not(.motion-reducido) .escenario-pasos {
+    height: auto;
+  }
+
+  html.js-activo:not(.motion-reducido) .escenario-pin {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+
+  html.js-activo:not(.motion-reducido) .pasos-pin {
+    position: static;
+    height: auto;
+  }
+
+  html.js-activo:not(.motion-reducido) .paso-pin {
+    position: static;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  html.js-activo:not(.motion-reducido) .pasos-indicador {
     display: none;
   }
 
-  .banda-marco {
-    aspect-ratio: 4 / 3;
+  html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
+    max-height: none;
+    width: 100%;
   }
 }
 
@@ -691,13 +778,5 @@ a:hover {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-
-  .aviso-linea {
-    animation: none;
-  }
-
-  .banda-marco img {
-    transform: none !important;
   }
 }

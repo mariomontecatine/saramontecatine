@@ -18,6 +18,13 @@
   var suaveActivo = ratonFino && !menosMovimiento;
 
   var html = document.documentElement;
+
+  /* Marca de progresión mejorada: sin esto, el escenario de pasos fijado
+     de "Cómo trabajo" se queda en su versión base accesible (sin pin ni
+     animación), tanto sin JS como con "menos movimiento" activado. */
+  html.classList.add("js-activo");
+  if (menosMovimiento) html.classList.add("motion-reducido");
+
   var btnMenu = document.getElementById("btn-menu");
   var menu = document.getElementById("menu");
   var velo = document.getElementById("velo");
@@ -31,6 +38,16 @@
   var conParallax = Array.prototype.slice.call(
     document.querySelectorAll("[data-parallax]"),
   );
+
+  var escenarioPasos = document.getElementById("escenario-pasos");
+  var pasosPin = escenarioPasos
+    ? Array.prototype.slice.call(escenarioPasos.querySelectorAll(".paso-pin"))
+    : [];
+  var indicadoresPaso = escenarioPasos
+    ? Array.prototype.slice.call(
+        escenarioPasos.querySelectorAll(".pasos-indicador span"),
+      )
+    : [];
 
   var menuAbierto = false;
 
@@ -287,7 +304,40 @@
   }
 
   /* ---------------------------------------------------------
-     Parallax y marca fija
+     Escenario de pasos fijado ("Cómo trabajo")
+     La sección tiene más altura de la que ocupa en pantalla (ver CSS,
+     .escenario-pasos), y su interior queda fijo (position: sticky)
+     mientras se recorre esa altura extra. Repartimos ese recorrido en
+     tres tramos iguales, uno por paso, y animamos la entrada/salida
+     por CSS según qué paso esté activo.
+     --------------------------------------------------------- */
+
+  function actualizarPasos() {
+    if (!escenarioPasos || !pasosPin.length || menosMovimiento) return;
+
+    var alto = window.innerHeight;
+    var recorrido = escenarioPasos.offsetHeight - alto;
+    if (recorrido <= 0) return;
+
+    var avance = -escenarioPasos.getBoundingClientRect().top;
+    var progreso = limitar(avance / recorrido, 0, 1);
+    var indiceActivo = Math.min(
+      pasosPin.length - 1,
+      Math.floor(progreso * pasosPin.length),
+    );
+
+    pasosPin.forEach(function (el, i) {
+      el.classList.toggle("activo", i === indiceActivo);
+      el.classList.toggle("salido", i < indiceActivo);
+      el.setAttribute("aria-hidden", i === indiceActivo ? "false" : "true");
+    });
+    indicadoresPaso.forEach(function (el, i) {
+      el.classList.toggle("activo", i === indiceActivo);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     Parallax y cabecera flotante
      --------------------------------------------------------- */
 
   var pintadoPedido = false;
@@ -312,10 +362,15 @@
         el.style.transform =
           "translate3d(0," + (centro * f * 300).toFixed(2) + "px,0)";
       });
+
+      actualizarPasos();
     }
 
     if (marca) {
-      marca.classList.toggle("visible", window.scrollY > window.innerHeight * 0.7);
+      marca.classList.toggle(
+        "visible",
+        window.scrollY > window.innerHeight * 0.45,
+      );
     }
   }
 
