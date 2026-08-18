@@ -46,10 +46,10 @@
 :root {
   color-scheme: light;
 
-  --papel: #f7f2fb; /* fondo general: lavanda muy claro */
-  --papel-tono: #f2eef9; /* bandas alternas, un punto más lavanda */
-  --lavanda: #e6dff2;
-  --lavanda-fuerte: #cabfe0;
+  --papel: #f2edfa; /* fondo general: lavanda claro pero visible */
+  --papel-tono: #e6def4; /* secciones alternas: lavanda más marcado */
+  --lavanda: #d9cdec; /* filetes y bordes */
+  --lavanda-fuerte: #bfaedd;
   --tinta: #2a2633; /* texto principal, 15:1 sobre --papel */
   --tinta-suave: #574f66; /* texto secundario, 8:1 */
   --acento: #6a5891;
