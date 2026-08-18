@@ -46,8 +46,8 @@
 :root {
   color-scheme: light;
 
-  --papel: #f2edfa; /* fondo general: lavanda claro pero visible */
-  --papel-tono: #e6def4; /* secciones alternas: lavanda más marcado */
+  --papel: #efe9f9; /* fondo general: lavanda claro pero visible */
+  --papel-tono: #e8e0f5; /* secciones alternas: lavanda más marcado */
   --lavanda: #d9cdec; /* filetes y bordes */
   --lavanda-fuerte: #bfaedd;
   --tinta: #2a2633; /* texto principal, 15:1 sobre --papel */
