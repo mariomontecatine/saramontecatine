@@ -1,72 +1,703 @@
-/* Ajustes propios sobre Tufte CSS. Todo lo demás lo hereda de tufte.css */
+/* =========================================================
+   Sara Montecatine · Psicología
+   Tipografía ET Book (de Tufte CSS) + paleta lavanda muy clara
+   ========================================================= */
 
-/* La web es siempre clara: así el modo oscuro del sistema o del navegador
-   no la reinterpreta por su cuenta. */
+/* ---------- Tipografía ---------- */
+
+@font-face {
+  font-family: "et-book";
+  src:
+    url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff")
+      format("woff"),
+    url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf")
+      format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "et-book";
+  src:
+    url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff")
+      format("woff"),
+    url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf")
+      format("truetype");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "et-book";
+  src:
+    url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff")
+      format("woff"),
+    url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf")
+      format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Paleta y medidas ---------- */
+
 :root {
-    color-scheme: light;
+  color-scheme: light;
+
+  --papel: #faf9fd; /* fondo general: lavanda casi blanco */
+  --papel-tono: #f2eef9; /* bandas alternas, un punto más lavanda */
+  --lavanda: #e6dff2;
+  --lavanda-fuerte: #cabfe0;
+  --tinta: #2a2633; /* texto principal, 15:1 sobre --papel */
+  --tinta-suave: #574f66; /* texto secundario, 8:1 */
+  --acento: #6a5891;
+
+  --ancho: 1160px;
+  --columna: 36rem; /* ancho cómodo de lectura */
+  --radio: 2px;
+
+  --paso: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- Base ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* El desplazamiento suave lo lleva script.js; esto es el respaldo sin JS. */
+  scroll-behavior: smooth;
+}
+
+/* Con el menú abierto se bloquea el scroll del fondo (mantiene la posición). */
+html.sin-scroll {
+  overflow: hidden;
 }
 
 body {
-    /* Tufte usa un crema (#fffff8); aquí lo dejamos en blanco puro.
-       Borra esta línea si prefieres recuperar el fondo original. */
-    background-color: #fff;
-    color: #111;
+  margin: 0;
+  background-color: var(--papel);
+  color: var(--tinta);
+  font-family:
+    "et-book", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* Tufte v1.8 trae su propio modo oscuro (tufte.css:60 y tufte.css:260) que aquí
-   estorbaba: al tener nosotros el fondo en blanco, dejaba el texto en gris claro
-   (sin contraste) y pintaba el halo del subrayado de los enlaces en negro, que es
-   lo que hacía que el correo y el teléfono pareciesen duplicados. Lo anulamos. */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #fff;
-        color: #111;
-    }
-}
-
-/* Halo del subrayado Tufte en blanco, igual que el fondo, en claro y en oscuro. */
-a:link,
-.tufte-underline,
-.hover-tufte-underline:hover {
-    text-shadow: 0.03em 0 #fff, -0.03em 0 #fff, 0 0.03em #fff, 0 -0.03em #fff, 0.06em 0 #fff, -0.06em 0 #fff, 0.09em 0 #fff, -0.09em 0 #fff, 0.12em 0 #fff, -0.12em 0 #fff, 0.15em 0 #fff, -0.15em 0 #fff;
-}
-
-/* La página tiene poco contenido: reducimos aires para que no haya que scrollear. */
-article {
-    padding: 5vh 0 3rem;
+h1,
+h2,
+h3 {
+  font-weight: normal;
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
 }
 
 h1 {
-    margin-top: 0;
-    font-size: 2.8rem;
-}
-
-p.subtitle {
-    font-size: 1.6rem;
-    color: #222;
+  font-size: clamp(3rem, 1.6rem + 6vw, 6rem);
+  letter-spacing: -0.015em;
 }
 
 h2 {
-    font-size: 1.6rem;
-    margin-top: 2.4rem;
-    margin-bottom: 0.8rem;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem);
+  margin-bottom: 1.6rem;
 }
 
-/* Lista de contacto: sin viñetas, icono + dato en una línea. */
-ul.contacto {
-    list-style: none;
-    -webkit-padding-start: 0;
-    padding-left: 0;
+h3 {
+  font-size: 1.22em;
+  margin-bottom: 0.35rem;
 }
 
-ul.contacto li:not(:first-child) {
-    margin-top: 0.5rem;
+p {
+  margin: 0 0 1.35rem;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+figure {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--lavanda-fuerte);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.35s var(--paso);
+}
+
+a:hover {
+  text-decoration-color: var(--acento);
+}
+
+:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+}
+
+.saltar {
+  position: absolute;
+  left: -9999px;
+}
+
+.saltar:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  background: var(--papel);
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--lavanda-fuerte);
+}
+
+/* ---------- Estructura ---------- */
+
+.contenedor {
+  width: min(100% - 2.5rem, var(--ancho));
+  margin-inline: auto;
+}
+
+.seccion {
+  padding-block: clamp(6rem, 13vh, 10.5rem);
+  scroll-margin-top: 0;
+}
+
+.seccion.tono {
+  background-color: var(--papel-tono);
+}
+
+.antetitulo {
+  font-style: italic;
+  color: var(--acento);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.9rem;
+}
+
+.columna-texto p,
+.contacto-caja p {
+  max-width: var(--columna);
+  color: var(--tinta-suave);
+}
+
+.columna-texto .dato {
+  font-style: italic;
+  margin-top: 2.2rem;
+  margin-bottom: 0;
+}
+
+/* ---------- Marca y menú hamburguesa ---------- */
+
+.marca {
+  position: fixed;
+  top: 1.9rem;
+  left: 2rem;
+  z-index: 90;
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  transition:
+    opacity 0.7s var(--paso),
+    transform 0.7s var(--paso);
+  pointer-events: none;
+}
+
+.marca.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.hamburguesa {
+  position: fixed;
+  top: 1.4rem;
+  right: 1.6rem;
+  z-index: 120;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  gap: 6px;
+  padding: 0.7rem;
+  background: color-mix(in srgb, var(--papel) 78%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--lavanda);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.hamburguesa-linea {
+  display: block;
+  width: 1.15rem;
+  height: 1px;
+  background: var(--tinta);
+  transition:
+    transform 0.45s var(--paso),
+    opacity 0.25s linear,
+    width 0.45s var(--paso);
+}
+
+.hamburguesa-linea:nth-child(2) {
+  width: 0.8rem;
+}
+
+.hamburguesa[aria-expanded="true"] .hamburguesa-linea {
+  width: 1.15rem;
+}
+
+.hamburguesa[aria-expanded="true"] .hamburguesa-linea:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburguesa[aria-expanded="true"] .hamburguesa-linea:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguesa[aria-expanded="true"] .hamburguesa-linea:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--tinta) 22%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s var(--paso),
+    visibility 0.5s;
+}
+
+.velo.abierto {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 110;
+  width: min(24rem, 86vw);
+  height: 100%;
+  padding: 7rem 2.5rem 2.5rem;
+  background: var(--papel-tono);
+  border-left: 1px solid var(--lavanda);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.6s var(--paso),
+    visibility 0.6s;
+}
+
+.menu.abierto {
+  transform: none;
+  visibility: visible;
+}
+
+.menu-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-lista li + li {
+  margin-top: 0.5rem;
+}
+
+.menu-lista a {
+  display: block;
+  padding: 0.35rem 0;
+  font-size: 1.45rem;
+  line-height: 1.3;
+  text-decoration: none;
+  color: var(--tinta-suave);
+  transition: color 0.35s var(--paso);
+}
+
+.menu-lista a:hover,
+.menu-lista a.activo {
+  color: var(--tinta);
+}
+
+.menu-num {
+  display: inline-block;
+  width: 2.4rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--acento);
+  vertical-align: 0.15em;
+}
+
+.menu-pie {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+}
+
+/* ---------- 01 · Portada ---------- */
+
+.portada {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: 7rem;
+}
+
+.portada-rejilla {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.portada-texto .rol {
+  font-style: italic;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
+  color: var(--acento);
+  margin: 0.6rem 0 2rem;
+}
+
+.portada-texto .claim {
+  max-width: 22rem;
+  color: var(--tinta-suave);
+}
+
+.boton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.7rem 1.8rem;
+  border: 1px solid var(--lavanda-fuerte);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--tinta);
+  background: transparent;
+  transition:
+    background-color 0.45s var(--paso),
+    border-color 0.45s var(--paso);
+}
+
+.boton:hover {
+  background-color: var(--lavanda);
+  border-color: var(--lavanda);
+}
+
+.portada-arte img {
+  width: 100%;
+  mix-blend-mode: multiply;
+}
+
+.aviso-scroll {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.aviso-linea {
+  width: 1px;
+  height: 3.5rem;
+  background: linear-gradient(var(--lavanda-fuerte), transparent);
+  transform-origin: top;
+  animation: bajar 2.8s ease-in-out infinite;
+}
+
+@keyframes bajar {
+  0% {
+    transform: scaleY(0.2);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* ---------- Dos columnas con imagen fija ---------- */
+
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(2.5rem, 7vw, 6rem);
+  align-items: start;
+}
+
+.dos-columnas.invertida {
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+/* La imagen se queda quieta mientras el texto sigue subiendo. */
+.retrato {
+  position: sticky;
+  top: max(12vh, 6rem);
+}
+
+.retrato img {
+  width: 100%;
+}
+
+.retrato.ilustracion img {
+  mix-blend-mode: multiply;
+}
+
+.pasos {
+  list-style: none;
+  margin: 2.8rem 0 0;
+  padding: 0;
+  counter-reset: paso;
+}
+
+.pasos li {
+  position: relative;
+  padding-left: 3.2rem;
+  counter-increment: paso;
+}
+
+.pasos li + li {
+  margin-top: 2.2rem;
+}
+
+.pasos li::before {
+  content: counter(paso, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--acento);
+}
+
+.pasos p {
+  margin-bottom: 0;
+  color: var(--tinta-suave);
+  max-width: 30rem;
+}
+
+/* ---------- Banda ilustrada ---------- */
+
+.banda {
+  overflow: hidden;
+  padding-block: 2rem;
+}
+
+.banda-marco {
+  width: min(100% - 2.5rem, 860px);
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radio);
+}
+
+.banda-marco img {
+  width: 100%;
+  height: 128%;
+  object-fit: cover;
+  object-position: center 42%;
+  will-change: transform;
+}
+
+/* ---------- 04 · Áreas ---------- */
+
+.titulo-ancho {
+  max-width: 18ch;
+}
+
+.rejilla-areas {
+  list-style: none;
+  margin: 3.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 2.6rem clamp(2rem, 4vw, 3.5rem);
+}
+
+.rejilla-areas li {
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--lavanda);
+}
+
+.rejilla-areas p {
+  margin-bottom: 0;
+  color: var(--tinta-suave);
+  font-size: 0.96em;
+}
+
+/* ---------- 05 · Contacto ---------- */
+
+.contacto-caja {
+  text-align: left;
+}
+
+.contacto-datos {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+}
+
+.contacto-datos li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.contacto-datos li + li {
+  margin-top: 1rem;
 }
 
 .icono {
-    width: 1.05em;
-    height: 1.05em;
-    vertical-align: -0.14em;
-    margin-right: 0.5rem;
-    color: #444;
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  color: var(--acento);
+}
+
+/* ---------- Pie ---------- */
+
+.pie {
+  padding-block: 2.5rem 3rem;
+  border-top: 1px solid var(--lavanda);
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+.pie-rejilla {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pie p {
+  margin: 0;
+}
+
+.pie strong {
+  font-weight: normal;
+  color: var(--tinta);
+}
+
+/* ---------- Animaciones de aparición ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(1.8rem);
+  transition:
+    opacity 1.1s var(--paso),
+    transform 1.1s var(--paso);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Escalonado entre hermanos, para que entren uno detrás de otro. */
+.reveal:nth-child(2) {
+  transition-delay: 0.08s;
+}
+.reveal:nth-child(3) {
+  transition-delay: 0.16s;
+}
+.reveal:nth-child(4) {
+  transition-delay: 0.24s;
+}
+.reveal:nth-child(5) {
+  transition-delay: 0.32s;
+}
+.reveal:nth-child(6) {
+  transition-delay: 0.4s;
+}
+
+/* ---------- Pantallas medianas y móvil ---------- */
+
+@media (max-width: 900px) {
+  .portada-rejilla,
+  .dos-columnas,
+  .dos-columnas.invertida {
+    grid-template-columns: 1fr;
+  }
+
+  .portada {
+    min-height: auto;
+    padding-block: 8rem 5rem;
+  }
+
+  .portada-arte {
+    max-width: 22rem;
+  }
+
+  .portada-texto {
+    order: -1;
+  }
+
+  /* En móvil la imagen no se queda fija: molesta más que suma. */
+  .retrato {
+    position: static;
+    max-width: 26rem;
+  }
+
+  .dos-columnas.invertida .retrato {
+    order: -1;
+  }
+
+  .aviso-scroll {
+    display: none;
+  }
+
+  .marca {
+    display: none;
+  }
+
+  .banda-marco {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ---------- Respeto por quien pide menos movimiento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .aviso-linea {
+    animation: none;
+  }
+
+  .banda-marco img {
+    transform: none !important;
+  }
 }
