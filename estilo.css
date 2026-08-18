@@ -86,7 +86,10 @@ body {
   font-size: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip no crea contenedor de scroll, así que no rompe position: sticky
+     como sí hace overflow: hidden en algunos navegadores móviles. */
+  overflow-x: hidden; /* respaldo para navegadores sin clip */
+  overflow-x: clip;
 }
 
 h1,
@@ -192,6 +195,16 @@ a:hover {
   margin-bottom: 0;
 }
 
+/* Título y entradilla de una sección, por encima de su contenido. */
+.cabecera-seccion p {
+  max-width: var(--columna);
+  color: var(--tinta-suave);
+}
+
+.cabecera-seccion .intro {
+  margin-bottom: 0;
+}
+
 /* ---------- Cabecera flotante y menú hamburguesa ---------- */
 
 /* Barra fija que aparece al dejar la portada. El fondo combina un
@@ -291,6 +304,9 @@ a:hover {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* Al abrir el menú, el velo cubre la web entera y la desenfoca. Queda por
+   debajo del panel (z-index 110) y del botón (120), así que esos dos se
+   siguen viendo nítidos. */
 .velo {
   position: fixed;
   inset: 0;
@@ -343,30 +359,6 @@ a:hover {
   margin-top: 0.5rem;
 }
 
-.menu-lista a {
-  display: block;
-  padding: 0.35rem 0;
-  font-size: 1.45rem;
-  line-height: 1.3;
-  text-decoration: none;
-  color: var(--tinta-suave);
-  transition: color 0.35s var(--paso);
-}
-
-.menu-lista a:hover,
-.menu-lista a.activo {
-  color: var(--tinta);
-}
-
-.menu-num {
-  display: inline-block;
-  width: 2.4rem;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--acento);
-  vertical-align: 0.15em;
-}
-
 .menu-pie {
   margin: 0;
   font-size: 0.95rem;
@@ -377,6 +369,7 @@ a:hover {
 
 .portada {
   position: relative;
+  min-height: 100vh; /* respaldo sin svh */
   min-height: 100svh;
   display: flex;
   align-items: center;
@@ -461,6 +454,7 @@ a:hover {
    fijar la sección ni animar nada: esta es la base accesible por defecto. */
 .escenario-pasos {
   position: relative;
+  padding-top: 3.5rem;
 }
 
 .escenario-pin {
@@ -474,7 +468,7 @@ a:hover {
 
 .pasos-pin {
   list-style: none;
-  margin: 2.8rem 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -511,11 +505,13 @@ a:hover {
    haya que deslizar aún más para pasar de uno a otro. */
 html.js-activo:not(.motion-reducido) .escenario-pasos {
   height: 360vh;
+  padding-top: 0;
 }
 
 html.js-activo:not(.motion-reducido) .escenario-pin {
   position: sticky;
   top: 0;
+  height: 100vh; /* respaldo sin svh */
   height: 100svh;
   justify-content: center;
   overflow: hidden;
@@ -528,6 +524,7 @@ html.js-activo:not(.motion-reducido) #como-trabajo .dos-columnas {
 }
 
 html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
+  max-height: 60vh; /* respaldo sin svh */
   max-height: 60svh;
   width: auto;
   margin-inline: auto;
@@ -537,6 +534,7 @@ html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
    más largo para que el bloque no dé saltos al cambiar de uno a otro. */
 html.js-activo:not(.motion-reducido) .pasos-pin {
   position: relative;
+  height: clamp(12rem, 24vh, 15rem);
   height: clamp(12rem, 24svh, 15rem);
 }
 
@@ -710,6 +708,7 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
 
   .portada-arte {
     max-width: 22rem;
+    margin-inline: auto;
   }
 
   .portada-texto {
@@ -718,6 +717,7 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
 
   .retrato {
     max-width: 26rem;
+    margin-inline: auto;
   }
 
   /* En móvil la foto tampoco se queda fija: molesta más que suma. */
@@ -725,18 +725,71 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
     position: static;
   }
 
-  .dos-columnas.invertida .retrato {
+  /* Al apilarse todo en una columna, si cada sección empezara por su
+     imagen aparecerían dos seguidas al pasar de una a la siguiente. Se
+     resuelve dejando la imagen al final en las secciones de contenido:
+     así siempre queda texto entre imagen e imagen. */
+  #quien-soy .retrato,
+  #contacto .retrato {
+    order: 2;
+  }
+
+  /* Dentro del bloque fijado sí va arriba: es la imagen que se queda
+     quieta mientras por debajo van pasando los tres pasos. */
+  #como-trabajo .retrato {
     order: -1;
   }
 
   .cabecera-flotante {
-    display: none;
+    height: 4.2rem;
+    padding-inline: 1.25rem;
   }
 
-  /* En móvil se apilan imagen y texto, y ya no caben en una pantalla
-     fijada: se cortarían. Volvemos a la lista corrida de los tres pasos. */
+  .cabecera-texto {
+    font-size: 0.9rem;
+  }
+
+  /* La animación de los pasos sí funciona en móvil: el título y la
+     entradilla quedan fuera del bloque fijado, así que dentro solo hay
+     que encajar la ilustración y el paso de turno. */
+  html.js-activo:not(.motion-reducido) .escenario-pasos {
+    height: 320vh;
+  }
+
+  html.js-activo:not(.motion-reducido) #como-trabajo .dos-columnas {
+    gap: 2rem;
+  }
+
+  html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
+    max-height: 30vh; /* respaldo para navegadores sin svh */
+    max-height: 30svh;
+  }
+
+  html.js-activo:not(.motion-reducido) .pasos-pin {
+    height: clamp(11rem, 30vh, 14rem);
+    height: clamp(11rem, 30svh, 14rem);
+  }
+
+  html.js-activo:not(.motion-reducido) .paso-pin {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  html.js-activo:not(.motion-reducido) .pasos-indicador {
+    justify-content: center;
+    margin-top: 1.8rem;
+  }
+}
+
+/* ---------- Pantallas muy bajas (móvil en horizontal) ---------- */
+
+/* Con menos de ~520px de alto, fijar una pantalla entera resulta agobiante
+   y el contenido no respira. Se vuelve a la lista corrida de los tres
+   pasos. Va después del bloque de móvil para poder ganarle. */
+@media (max-height: 520px) {
   html.js-activo:not(.motion-reducido) .escenario-pasos {
     height: auto;
+    padding-top: 3.5rem;
   }
 
   html.js-activo:not(.motion-reducido) .escenario-pin {
@@ -763,7 +816,6 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
 
   html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
     max-height: none;
-    width: 100%;
   }
 }
 
