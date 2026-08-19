@@ -40,6 +40,9 @@
   );
 
   var escenarioPasos = document.getElementById("escenario-pasos");
+  var escenarioPin = escenarioPasos
+    ? escenarioPasos.querySelector(".escenario-pin")
+    : null;
   var pasosPin = escenarioPasos
     ? Array.prototype.slice.call(escenarioPasos.querySelectorAll(".paso-pin"))
     : [];
@@ -91,12 +94,19 @@
 
     e.preventDefault();
 
+    /* Si veníamos de un asentado, mandan las manos del usuario. */
+    if (enAjuste) {
+      cancelarAjuste();
+      objetivo = actual = window.scrollY;
+    }
+
     var delta = e.deltaY;
     if (e.deltaMode === 1) delta *= 18; /* líneas */
     else if (e.deltaMode === 2) delta *= window.innerHeight; /* páginas */
 
     objetivo = limitar(objetivo + delta, 0, limite());
     arrancar();
+    programarAjuste();
   }
 
   function alTeclado(e) {
@@ -117,8 +127,13 @@
     if (salto === null) return;
 
     e.preventDefault();
+    if (enAjuste) {
+      cancelarAjuste();
+      objetivo = actual = window.scrollY;
+    }
     objetivo = limitar(objetivo + salto, 0, limite());
     arrancar();
+    programarAjuste();
   }
 
   function arrancar() {
@@ -136,6 +151,7 @@
         window.scrollTo(0, actual);
         animando = false;
         pintar();
+        programarAjuste();
         return;
       }
       actual += d * FACTOR;
@@ -152,6 +168,7 @@
     if (menosMovimiento) {
       window.scrollTo(0, destino);
       objetivo = actual = destino;
+      enAjuste = false;
       return;
     }
 
@@ -177,7 +194,10 @@
       pintar();
 
       if (p < 1) requestAnimationFrame(paso);
-      else animando = false;
+      else {
+        animando = false;
+        enAjuste = false;
+      }
     })(t0);
   }
 
@@ -188,8 +208,20 @@
     function () {
       if (!animando) {
         actual = objetivo = window.scrollY;
+        /* Desplazamiento ajeno al motor (táctil, barra, rueda del sistema):
+           también merece asentarse al parar. */
+        programarAjuste();
       }
       pedirPintado();
+    },
+    { passive: true },
+  );
+
+  /* Un dedo en la pantalla manda sobre cualquier asentado en curso. */
+  window.addEventListener(
+    "touchstart",
+    function () {
+      cancelarAjuste();
     },
     { passive: true },
   );
@@ -247,6 +279,7 @@
 
         e.preventDefault();
         if (menuAbierto) cerrarMenu(false);
+        cancelarAjuste();
 
         irA(destino.getBoundingClientRect().top + window.scrollY);
         history.replaceState(null, "", id);
@@ -312,28 +345,123 @@
      por CSS según qué paso esté activo.
      --------------------------------------------------------- */
 
+  /* Fronteras entre pasos, en tanto por uno del recorrido. La última deja
+     una cola corta: el 03 se lee y enseguida se suelta la sección, en vez
+     de quedarse fijada un tramo largo sin que pase nada. */
+  var CORTES = [0.36, 0.72];
+
+  /* Margen muerto alrededor de cada frontera. Sin él basta un temblor del
+     ratón justo en el límite para saltar de paso, o para ir y volver. */
+  var HISTERESIS = 0.04;
+
+  /* Centro de la meseta de cada paso: es donde se imanta el scroll. */
+  var ANCLAS = (function () {
+    var bordes = [0].concat(CORTES, [1]);
+    var centros = [];
+    for (var i = 0; i < bordes.length - 1; i++) {
+      centros.push((bordes[i] + bordes[i + 1]) / 2);
+    }
+    return centros;
+  })();
+
+  var indicePaso = 0;
+
+  function recorridoEscenario() {
+    return escenarioPasos.offsetHeight - window.innerHeight;
+  }
+
+  function progresoEscenario() {
+    return limitar(
+      -escenarioPasos.getBoundingClientRect().top / recorridoEscenario(),
+      0,
+      1,
+    );
+  }
+
+  /* ¿Está el escenario fijado ahora mismo? En móvil apaisado, con "menos
+     movimiento" o sin soporte, el CSS lo deja como lista corrida y aquí
+     no debemos tocar nada. */
+  function escenarioFijado() {
+    if (!escenarioPin || menosMovimiento) return false;
+    if (getComputedStyle(escenarioPin).position !== "sticky") return false;
+    var r = escenarioPasos.getBoundingClientRect();
+    return r.top <= 0 && r.bottom >= window.innerHeight;
+  }
+
   function actualizarPasos() {
     if (!escenarioPasos || !pasosPin.length || menosMovimiento) return;
+    if (recorridoEscenario() <= 0) return;
 
-    var alto = window.innerHeight;
-    var recorrido = escenarioPasos.offsetHeight - alto;
-    if (recorrido <= 0) return;
+    var progreso = progresoEscenario();
+    var ultimo = pasosPin.length - 1;
 
-    var avance = -escenarioPasos.getBoundingClientRect().top;
-    var progreso = limitar(avance / recorrido, 0, 1);
-    var indiceActivo = Math.min(
-      pasosPin.length - 1,
-      Math.floor(progreso * pasosPin.length),
-    );
+    /* Avanzamos o retrocedemos desde el paso actual, no desde cero: así el
+       margen muerto se aplica al sentido en el que se está moviendo. */
+    while (
+      indicePaso < ultimo &&
+      progreso > CORTES[indicePaso] + HISTERESIS
+    ) {
+      indicePaso++;
+    }
+    while (indicePaso > 0 && progreso < CORTES[indicePaso - 1] - HISTERESIS) {
+      indicePaso--;
+    }
 
     pasosPin.forEach(function (el, i) {
-      el.classList.toggle("activo", i === indiceActivo);
-      el.classList.toggle("salido", i < indiceActivo);
-      el.setAttribute("aria-hidden", i === indiceActivo ? "false" : "true");
+      el.classList.toggle("activo", i === indicePaso);
+      el.classList.toggle("salido", i < indicePaso);
+      el.setAttribute("aria-hidden", i === indicePaso ? "false" : "true");
     });
     indicadoresPaso.forEach(function (el, i) {
-      el.classList.toggle("activo", i === indiceActivo);
+      el.classList.toggle("activo", i === indicePaso);
     });
+  }
+
+  /* ---------------------------------------------------------
+     Imantado de los pasos
+     Al dejar de desplazarse dentro del escenario, el scroll se asienta en
+     el centro de la meseta del paso más cercano. Así un movimiento corto
+     vuelve al sitio (el paso se queda quieto e invita a leerlo) y solo uno
+     decidido pasa al siguiente, que a su vez queda centrado.
+     --------------------------------------------------------- */
+
+  var TIEMPO_REPOSO = 200; /* ms parado antes de asentar */
+  var relojAjuste = null;
+  var enAjuste = false;
+
+  function cancelarAjuste() {
+    clearTimeout(relojAjuste);
+    if (enAjuste) {
+      animId++; /* corta la animación en curso */
+      animando = false;
+      enAjuste = false;
+    }
+  }
+
+  function programarAjuste() {
+    if (menosMovimiento || !escenarioPasos || !pasosPin.length) return;
+    clearTimeout(relojAjuste);
+    relojAjuste = setTimeout(asentarEnPaso, TIEMPO_REPOSO);
+  }
+
+  function asentarEnPaso() {
+    if (menuAbierto || animando || !escenarioFijado()) return;
+
+    var recorrido = recorridoEscenario();
+    if (recorrido <= 0) return;
+
+    var inicio = escenarioPasos.getBoundingClientRect().top + window.scrollY;
+    var progreso = progresoEscenario();
+
+    /* Ni al entrar ni al salir tiramos del usuario: solo se imanta entre
+       el primer ancla y la última, para no impedir seguir leyendo. */
+    if (progreso < ANCLAS[0] || progreso > ANCLAS[ANCLAS.length - 1]) return;
+
+    var destino = inicio + ANCLAS[indicePaso] * recorrido;
+    if (Math.abs(destino - window.scrollY) < 6) return;
+
+    enAjuste = true;
+    irA(destino, 620);
   }
 
   /* ---------------------------------------------------------
