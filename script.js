@@ -465,6 +465,30 @@
   }
 
   /* ---------------------------------------------------------
+     Fondo en vídeo de la sección 3
+     --------------------------------------------------------- */
+
+  var videoFondo = document.getElementById("video-fondo");
+
+  if (videoFondo) {
+    if (menosMovimiento) {
+      /* El CSS ya lo oculta; lo paramos para no gastar datos ni batería. */
+      videoFondo.autoplay = false;
+      videoFondo.removeAttribute("autoplay");
+      videoFondo.pause();
+    } else {
+      /* Algunos navegadores no hacen caso al atributo autoplay hasta que se
+         les pide por código. Va en silencio, que es lo que exigen todos
+         para dejar arrancar solo; si aun así lo bloquean, no pasa nada:
+         queda el color de fondo de siempre. */
+      var arranca = videoFondo.play();
+      if (arranca && typeof arranca.catch === "function") {
+        arranca.catch(function () {});
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------
      Parallax y cabecera flotante
      --------------------------------------------------------- */
 

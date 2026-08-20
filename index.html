@@ -131,6 +131,26 @@
 
       <!-- 03 · Cómo trabajo -->
       <section class="seccion" id="como-trabajo">
+        <!-- Fondo en vídeo. La capa interior se queda pegada a la pantalla,
+             así cubre la sección entera (texto y carrusel de fases) sin
+             deformarse por lo alta que es. -->
+        <div class="fondo-video" aria-hidden="true">
+          <div class="fondo-video-capa">
+            <video
+              id="video-fondo"
+              src="img/fondo-como-trabajo.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              preload="auto"
+              tabindex="-1"
+            ></video>
+            <span class="fondo-video-velo"></span>
+          </div>
+        </div>
+
         <div class="contenedor cabecera-seccion">
           <p class="antetitulo reveal">03</p>
           <h2 class="reveal">¿Cómo trabajo?</h2>

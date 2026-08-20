@@ -544,6 +544,75 @@ a:hover {
   top: max(12vh, 6rem);
 }
 
+/* ---------- 03 · Fondo en vídeo ---------- */
+
+#como-trabajo {
+  position: relative;
+  /* Contexto de apilado propio: así el z-index del vídeo y del contenido
+     solo compiten entre ellos y no con el menú o la cabecera. */
+  isolation: isolate;
+}
+
+/* Ocupa la sección entera, incluido su relleno superior e inferior. */
+.fondo-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Lo que se queda pegado. Sin esto habría que estirar el vídeo a lo alto
+   de toda la sección (varias pantallas) y se vería un plano gigante y
+   quieto; así siempre cubre justo lo que se está mirando.
+   No hace falta recortar por fuera: sticky nunca se sale de su caja. */
+.fondo-video-capa {
+  position: sticky;
+  top: 0;
+  height: 100vh; /* respaldo sin svh */
+  height: 100svh;
+}
+
+.fondo-video-capa video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* El vídeo es vertical y en pantalla apaisada hay que recortarlo mucho.
+     Sara, la playa y la isla están entre el 73% y el 100% del alto, así que
+     centrado solo se veía cielo: lo anclamos abajo. En móvil, donde cabe
+     el alto entero, este ajuste no cambia nada. */
+  object-position: center bottom;
+}
+
+/* Vela el vídeo para integrarlo con la paleta sin que tape el texto.
+   Medido contra los planos reales del vídeo, al 70% el texto principal
+   conserva 6,2:1 en la peor zona, holgado sobre el mínimo de 4,5:1.
+   Súbelo si quieres el fondo más discreto, bájalo para verlo más: por
+   debajo del 60% ya no está garantizado el contraste. */
+.fondo-video-velo {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--papel) 70%, transparent);
+}
+
+/* Sobre el vídeo no se puede contar con el fondo: si el plano es oscuro,
+   los tonos suaves se quedan por debajo del mínimo de contraste (4,3:1 el
+   texto secundario, 3,4:1 el acento). En esta sección van con la tinta
+   principal, que aguanta 8,2:1 incluso contra negro. */
+#como-trabajo .cabecera-seccion p,
+#como-trabajo .paso-pin p,
+#como-trabajo .antetitulo,
+#como-trabajo .paso-pin-num {
+  color: var(--tinta);
+}
+
+/* El contenido, por encima del fondo. */
+#como-trabajo .cabecera-seccion,
+#como-trabajo .escenario-pasos {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---------- 03 · Escenario de pasos fijado ---------- */
 
 /* Sin JS (o con "menos movimiento") los tres pasos se leen seguidos, sin
@@ -930,6 +999,12 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  /* Un vídeo en bucle constante es justo lo que evita quien pide menos
+     movimiento: se retira y la sección se queda con su color de fondo. */
+  .fondo-video {
+    display: none;
   }
 
   /* El menú sigue desenfocando el fondo, pero sin deslizamientos ni
