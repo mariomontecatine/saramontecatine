@@ -577,11 +577,12 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* El vídeo es vertical y en pantalla apaisada hay que recortarlo mucho.
-     Sara, la playa y la isla están entre el 73% y el 100% del alto, así que
-     centrado solo se veía cielo: lo anclamos abajo. En móvil, donde cabe
-     el alto entero, este ajuste no cambia nada. */
-  object-position: center bottom;
+  /* El vídeo es vertical y en pantalla apaisada hay que recortarlo mucho;
+     centrado solo se vería cielo. Sara va acercándose y baja en el cuadro:
+     medida a lo largo de los 18 s, ocupa entre el 54% y el 89% del alto, así
+     que la franja visible se lleva al 83% para que quepa entera en todo
+     momento. En móvil, donde cabe el alto completo, no cambia nada. */
+  object-position: center 83%;
 }
 
 /* Vela el vídeo para integrarlo con la paleta sin que tape el texto.
