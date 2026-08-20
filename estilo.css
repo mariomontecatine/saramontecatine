@@ -572,7 +572,8 @@ a:hover {
   height: 100svh;
 }
 
-.fondo-video-capa video {
+.fondo-video-capa video,
+.fondo-video-anim {
   display: block;
   width: 100%;
   height: 100%;
@@ -582,6 +583,44 @@ a:hover {
      centrado solo se veía cielo: lo anclamos abajo. En móvil, donde cabe
      el alto entero, este ajuste no cambia nada. */
   object-position: center bottom;
+}
+
+/* Respaldo animado. Solo lo inserta el JavaScript si el vídeo no consigue
+   reproducirse, que es lo que pasa con el ahorro de batería de iOS: veta los
+   vídeos, pero no las imágenes animadas, así que el fondo se sigue moviendo.
+   Va entre el vídeo y el velo para que este siga por encima. */
+.fondo-video-anim {
+  position: absolute;
+  inset: 0;
+}
+
+.fondo-video-capa.con-respaldo video {
+  display: none;
+}
+
+/* iOS dibuja su propio botón de play encima de los vídeos que aún no han
+   arrancado (pasa siempre con el ahorro de batería puesto, que veta la
+   reproducción automática). Aquí sobra: esto es un fondo, no un reproductor,
+   y sin el botón se ve el primer fotograma como una foto fija.
+   Cada selector va en su propia regla a propósito: son pseudoelementos no
+   estándar y, si se juntaran en una lista, bastaría con que un navegador no
+   reconociera uno para tirar la regla entera. */
+.fondo-video-capa video::-webkit-media-controls {
+  display: none !important;
+}
+
+.fondo-video-capa video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.fondo-video-capa video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+.fondo-video-capa video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
 }
 
 /* Vela el vídeo para integrarlo con la paleta sin que tape el texto.

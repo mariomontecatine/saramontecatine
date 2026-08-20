@@ -484,6 +484,29 @@
       videoFondo.defaultMuted = true;
 
       var pidiendo = false;
+      var respaldo = null;
+
+      /* El ahorro de batería de iOS prohíbe reproducir vídeos solos, pero no
+         anima menos las imágenes: un WebP animado sigue moviéndose. Se pide
+         solo cuando hace falta, así que quien pueda ver el vídeo no se
+         descarga estos 176 KB de más. */
+      function ponerRespaldo() {
+        if (respaldo) return;
+        var capa = videoFondo.parentNode;
+        respaldo = document.createElement("img");
+        respaldo.className = "fondo-video-anim";
+        respaldo.src = "img/fondo-como-trabajo-anim.webp";
+        respaldo.alt = "";
+        capa.insertBefore(respaldo, videoFondo.nextSibling);
+        capa.classList.add("con-respaldo");
+      }
+
+      function quitarRespaldo() {
+        if (!respaldo) return;
+        videoFondo.parentNode.classList.remove("con-respaldo");
+        respaldo.remove();
+        respaldo = null;
+      }
 
       function intentarVideo() {
         if (pidiendo || !videoFondo.paused) return;
@@ -495,13 +518,19 @@
               pidiendo = false;
             },
             function () {
+              /* Rechazado: el navegador no nos deja. Entra el respaldo. */
               pidiendo = false;
+              ponerRespaldo();
             },
           );
         } else {
           pidiendo = false;
         }
       }
+
+      /* Si acaba arrancando (por ejemplo al tocar la pantalla), el vídeo manda
+         y el respaldo se retira. */
+      videoFondo.addEventListener("playing", quitarRespaldo);
 
       intentarVideo();
 
