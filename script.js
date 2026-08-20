@@ -46,14 +46,21 @@
   var pasosPin = escenarioPasos
     ? Array.prototype.slice.call(escenarioPasos.querySelectorAll(".paso-pin"))
     : [];
-  var indicadoresPaso = escenarioPasos
-    ? Array.prototype.slice.call(
-        escenarioPasos.querySelectorAll(".pasos-indicador span"),
-      )
-    : [];
-  var avisoSigue = document.getElementById("aviso-sigue");
+  var barraPasos = document.getElementById("pasos-barra");
+  var barraRelleno = document.getElementById("pasos-barra-relleno");
 
   var menuAbierto = false;
+
+  /* Si el escenario está en modo fijado o en su versión de lista corrida.
+     Se consulta una vez y al cambiar el tamaño, no en cada evento. */
+  var modoFijado = false;
+
+  function revisarModo() {
+    modoFijado =
+      !!escenarioPin &&
+      !menosMovimiento &&
+      getComputedStyle(escenarioPin).position === "sticky";
+  }
 
   /* ---------------------------------------------------------
      Desplazamiento lento
@@ -105,7 +112,7 @@
     if (e.deltaMode === 1) delta *= 18; /* líneas */
     else if (e.deltaMode === 2) delta *= window.innerHeight; /* páginas */
 
-    objetivo = limitar(objetivo + delta, 0, limite());
+    objetivo = topeDeFase(limitar(objetivo + delta, 0, limite()));
     arrancar();
     programarAjuste();
   }
@@ -132,9 +139,40 @@
       cancelarAjuste();
       objetivo = actual = window.scrollY;
     }
-    objetivo = limitar(objetivo + salto, 0, limite());
+    objetivo = topeDeFase(limitar(objetivo + salto, 0, limite()));
     arrancar();
     programarAjuste();
+  }
+
+  /* Dentro del escenario, un gesto no puede llevarse por delante más de una
+     fase: el destino se topa en el imán de la fase contigua. Sin esto, un
+     golpe de rueda fuerte se salta una o incluso la sección entera. En la
+     última fase no se topa nada hacia abajo, para poder salir con
+     normalidad; igual en la primera hacia arriba. */
+  function topeDeFase(y) {
+    if (!modoFijado || !pasosPin.length) return y;
+
+    var recorrido = recorridoEscenario();
+    if (recorrido <= 0) return y;
+
+    var inicio = escenarioPasos.getBoundingClientRect().top + window.scrollY;
+    var fin = inicio + recorrido;
+    var aqui = window.scrollY;
+    var ultimo = pasosPin.length - 1;
+    var dentro = aqui >= inicio && aqui <= fin;
+
+    if (y > aqui) {
+      if (aqui < inicio) return Math.min(y, inicio + ANCLAS[0] * recorrido);
+      if (dentro && indicePaso < ultimo) {
+        return Math.min(y, inicio + ANCLAS[indicePaso + 1] * recorrido);
+      }
+    } else if (y < aqui) {
+      if (aqui > fin) return Math.max(y, inicio + ANCLAS[ultimo] * recorrido);
+      if (dentro && indicePaso > 0) {
+        return Math.max(y, inicio + ANCLAS[indicePaso - 1] * recorrido);
+      }
+    }
+    return y;
   }
 
   function arrancar() {
@@ -229,7 +267,10 @@
 
   window.addEventListener("resize", function () {
     actual = objetivo = window.scrollY;
+    revisarModo();
   });
+
+  revisarModo();
 
   /* ---------------------------------------------------------
      Menú lateral
@@ -346,18 +387,23 @@
      por CSS según qué paso esté activo.
      --------------------------------------------------------- */
 
-  /* Fronteras entre pasos, en tanto por uno del recorrido. La última deja
-     una cola corta: el 03 se lee y enseguida se suelta la sección, en vez
-     de quedarse fijada un tramo largo sin que pase nada. */
-  var CORTES = [0.36, 0.72];
+  /* Fronteras entre fases, en tanto por uno del recorrido: los tres tramos
+     duran lo mismo, y es donde van las divisiones de la barra. */
+  var FRONTERAS = [1 / 3, 2 / 3];
 
-  /* Margen muerto alrededor de cada frontera. Sin él basta un temblor del
-     ratón justo en el límite para saltar de paso, o para ir y volver. */
-  var HISTERESIS = 0.04;
+  /* Margen muerto a cada lado de la frontera, para que un temblor del ratón
+     justo en el límite no haga saltar la fase adelante y atrás.
+     Va repartido de forma simétrica: bajando se cambia un pelín después de
+     la línea y subiendo un pelín antes, en vez de descontarlo entero hacia
+     un lado, que hacía que subiendo hubiera que pasarse 21vh de la línea.
+     Y es pequeño, unos 5vh, porque con el imán y el tope de fase el scroll
+     ya nunca se queda parado encima de una frontera: la oscilación que
+     obligaba a un margen grande ya no puede darse. */
+  var HISTERESIS = 0.02;
 
-  /* Centro de la meseta de cada paso: es donde se imanta el scroll. */
+  /* Centro de cada tramo: es donde se imanta el scroll. */
   var ANCLAS = (function () {
-    var bordes = [0].concat(CORTES, [1]);
+    var bordes = [0].concat(FRONTERAS, [1]);
     var centros = [];
     for (var i = 0; i < bordes.length - 1; i++) {
       centros.push((bordes[i] + bordes[i + 1]) / 2);
@@ -366,6 +412,17 @@
   })();
 
   var indicePaso = 0;
+
+  /* Las divisiones de la barra salen de FRONTERAS, que es justo donde se ve
+     cambiar la fase. Así no hay dos sitios que puedan descuadrarse. */
+  if (barraPasos) {
+    FRONTERAS.forEach(function (corte) {
+      var marca = document.createElement("span");
+      marca.className = "pasos-barra-marca";
+      marca.style.left = (corte * 100).toFixed(2) + "%";
+      barraPasos.appendChild(marca);
+    });
+  }
 
   function recorridoEscenario() {
     return escenarioPasos.offsetHeight - window.innerHeight;
@@ -400,11 +457,14 @@
        margen muerto se aplica al sentido en el que se está moviendo. */
     while (
       indicePaso < ultimo &&
-      progreso > CORTES[indicePaso] + HISTERESIS
+      progreso > FRONTERAS[indicePaso] + HISTERESIS
     ) {
       indicePaso++;
     }
-    while (indicePaso > 0 && progreso < CORTES[indicePaso - 1] - HISTERESIS) {
+    while (
+      indicePaso > 0 &&
+      progreso < FRONTERAS[indicePaso - 1] - HISTERESIS
+    ) {
       indicePaso--;
     }
 
@@ -413,17 +473,10 @@
       el.classList.toggle("salido", i < indicePaso);
       el.setAttribute("aria-hidden", i === indicePaso ? "false" : "true");
     });
-    indicadoresPaso.forEach(function (el, i) {
-      el.classList.toggle("activo", i === indicePaso);
-    });
-
-    /* El aviso de seguir deslizando solo mientras quedan pasos por delante:
-       en el último ya no hay nada que esperar y el scroll sigue su curso. */
-    if (avisoSigue) {
-      avisoSigue.classList.toggle(
-        "visible",
-        progreso > 0.01 && indicePaso < ultimo,
-      );
+    /* La barra sigue al scroll sin retardo ni suavizado: es justo eso lo
+       que hace ver que la web responde aunque la fase todavía no cambie. */
+    if (barraRelleno) {
+      barraRelleno.style.transform = "scaleX(" + progreso.toFixed(4) + ")";
     }
   }
 

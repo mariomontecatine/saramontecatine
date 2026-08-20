@@ -59,6 +59,12 @@
   --radio: 2px;
 
   --paso: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Un único ritmo para toda la web: si cambias --tiempo, cambia todo a la
+     vez y sigue yendo acompasado. Los otros dos son su mitad y su doble. */
+  --tiempo: 0.6s;
+  --tiempo-corto: 0.3s;
+  --tiempo-largo: 1.2s;
 }
 
 /* ---------- Base ---------- */
@@ -138,7 +144,7 @@ a {
   text-decoration-color: var(--lavanda-fuerte);
   text-underline-offset: 0.22em;
   text-decoration-thickness: 1px;
-  transition: text-decoration-color 0.35s var(--paso);
+  transition: text-decoration-color var(--tiempo-corto) var(--paso);
 }
 
 a:hover {
@@ -240,8 +246,8 @@ a:hover {
   opacity: 0;
   transform: translateY(-0.6rem);
   transition:
-    opacity 0.6s var(--paso),
-    transform 0.6s var(--paso);
+    opacity var(--tiempo) var(--paso),
+    transform var(--tiempo) var(--paso);
   pointer-events: none;
 }
 
@@ -282,9 +288,9 @@ a:hover {
   height: 1px;
   background: var(--tinta);
   transition:
-    transform 0.6s var(--paso),
-    opacity 0.3s linear,
-    width 0.6s var(--paso);
+    transform var(--tiempo) var(--paso),
+    opacity var(--tiempo-corto) linear,
+    width var(--tiempo) var(--paso);
 }
 
 .hamburguesa-linea:nth-child(2) {
@@ -320,10 +326,10 @@ a:hover {
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.75s var(--paso) 0.12s,
-    -webkit-backdrop-filter 0.75s var(--paso) 0.12s,
-    backdrop-filter 0.75s var(--paso) 0.12s,
-    visibility 0.75s 0.12s;
+    opacity var(--tiempo) var(--paso) 0.12s,
+    -webkit-backdrop-filter var(--tiempo) var(--paso) 0.12s,
+    backdrop-filter var(--tiempo) var(--paso) 0.12s,
+    visibility var(--tiempo) 0.12s;
 }
 
 .velo.abierto {
@@ -353,8 +359,8 @@ a:hover {
      retardo solo cuenta al cerrar: así el panel espera a que los enlaces
      se hayan ido, que es justo el orden inverso de la apertura. */
   transition:
-    transform 0.8s var(--paso) 0.18s,
-    visibility 0.8s 0.18s;
+    transform var(--tiempo) var(--paso) 0.18s,
+    visibility var(--tiempo) 0.18s;
 }
 
 .menu.abierto {
@@ -381,8 +387,8 @@ a:hover {
   opacity: 0;
   transform: translateX(1.2rem);
   transition:
-    opacity 0.55s var(--paso),
-    transform 0.55s var(--paso);
+    opacity var(--tiempo) var(--paso),
+    transform var(--tiempo) var(--paso);
 }
 
 .menu.abierto .menu-lista li,
@@ -438,7 +444,7 @@ a:hover {
   line-height: 1.3;
   text-decoration: none;
   color: var(--tinta-suave);
-  transition: color 0.35s var(--paso);
+  transition: color var(--tiempo-corto) var(--paso);
 }
 
 .menu-lista a:hover,
@@ -501,8 +507,8 @@ a:hover {
   color: var(--tinta);
   background: transparent;
   transition:
-    background-color 0.45s var(--paso),
-    border-color 0.45s var(--paso);
+    background-color var(--tiempo) var(--paso),
+    border-color var(--tiempo) var(--paso);
 }
 
 .boton:hover {
@@ -696,7 +702,7 @@ a:hover {
   color: var(--tinta-suave);
 }
 
-.pasos-indicador {
+.pasos-barra {
   display: none;
 }
 
@@ -759,8 +765,8 @@ html.js-activo:not(.motion-reducido) .paso-pin {
      sale por la izquierda. Los tiempos son los mismos que antes. */
   transform: translateX(3rem);
   transition:
-    opacity 0.6s var(--paso),
-    transform 0.6s var(--paso);
+    opacity var(--tiempo) var(--paso),
+    transform var(--tiempo) var(--paso);
   pointer-events: none;
 }
 
@@ -775,85 +781,40 @@ html.js-activo:not(.motion-reducido) .paso-pin.salido {
   transform: translateX(-3rem);
 }
 
-html.js-activo:not(.motion-reducido) .pasos-indicador {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 2.5rem;
+/* Barra de avance de las fases.
+   Sustituye a los puntitos y al cartel de "sigue deslizando". Se rellena de
+   forma continua con el scroll, así que cualquier movimiento, por pequeño
+   que sea, se ve en pantalla: eso es lo que hacía falta, porque con la
+   banda muerta entre fases un movimiento corto no cambiaba nada y parecía
+   que la web se había quedado colgada. Y al verla por la primera tercera
+   parte se entiende solo que quedan dos más.
+   Las divisiones entre fases las coloca script.js a partir de las mismas
+   constantes que reparten el scroll, para que no puedan descuadrarse. */
+html.js-activo:not(.motion-reducido) .pasos-barra {
+  position: relative;
+  display: block;
+  width: min(100%, 22rem);
+  height: 2px;
+  margin-top: 2.8rem;
+  background: color-mix(in srgb, var(--tinta) 18%, transparent);
 }
 
-html.js-activo:not(.motion-reducido) .pasos-indicador span {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--lavanda-fuerte);
-  transition:
-    background-color 0.4s var(--paso),
-    transform 0.4s var(--paso);
-}
-
-html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
-  background: var(--acento);
-  transform: scale(1.3);
-}
-
-/* Aviso de "sigue deslizando".
-   Al quedarse la sección fijada, varias personas creyeron que la web se
-   acababa ahí. Este aviso aparece mientras el escenario está fijado y aún
-   quedan pasos por ver, y se retira en el último, cuando el scroll vuelve a
-   comportarse como siempre.
-   Fuera del modo fijado (sin JS, con "menos movimiento" o en pantallas muy
-   bajas) no pinta nada, porque ahí no hay nada que bloquee el scroll. */
-.aviso-sigue {
-  display: none;
-}
-
-html.js-activo:not(.motion-reducido) .aviso-sigue {
+html.js-activo:not(.motion-reducido) .pasos-barra-relleno {
   position: absolute;
-  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--tinta);
-  white-space: nowrap;
-  opacity: 0;
-  transform: translate(-50%, 0.5rem);
-  transition:
-    opacity 0.6s var(--paso),
-    transform 0.6s var(--paso);
-  pointer-events: none;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: var(--acento);
 }
 
-html.js-activo:not(.motion-reducido) .aviso-sigue.visible {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.aviso-sigue-linea {
+/* Cada división sobresale por arriba y por abajo, para que se siga viendo
+   cuando el relleno ya ha pasado por encima. */
+html.js-activo:not(.motion-reducido) .pasos-barra-marca {
+  position: absolute;
+  top: -3px;
   width: 1px;
-  height: 2.2rem;
-  background: linear-gradient(var(--tinta), transparent);
-  transform-origin: top;
-  animation: seguir-bajando 2.4s ease-in-out infinite;
-}
-
-@keyframes seguir-bajando {
-  0% {
-    transform: scaleY(0.15);
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 0;
-  }
+  height: 8px;
+  background: color-mix(in srgb, var(--tinta) 45%, transparent);
 }
 
 /* ---------- 04 · Áreas ---------- */
@@ -934,8 +895,8 @@ html.js-activo:not(.motion-reducido) .aviso-sigue.visible {
   opacity: 0;
   transform: translateY(1.8rem);
   transition:
-    opacity 1.1s var(--paso),
-    transform 1.1s var(--paso);
+    opacity var(--tiempo-largo) var(--paso),
+    transform var(--tiempo-largo) var(--paso);
 }
 
 .reveal.visible {
@@ -1043,9 +1004,9 @@ html.js-activo:not(.motion-reducido) .aviso-sigue.visible {
     text-align: center;
   }
 
-  html.js-activo:not(.motion-reducido) .pasos-indicador {
-    justify-content: center;
+  html.js-activo:not(.motion-reducido) .pasos-barra {
     margin-top: 1.8rem;
+    margin-inline: auto;
   }
 }
 
@@ -1078,19 +1039,12 @@ html.js-activo:not(.motion-reducido) .aviso-sigue.visible {
     pointer-events: auto;
   }
 
-  html.js-activo:not(.motion-reducido) .pasos-indicador {
+  html.js-activo:not(.motion-reducido) .pasos-barra {
     display: none;
   }
 
   html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
     max-height: none;
-  }
-
-  /* Aquí el escenario deja de estar fijado, así que no hay nada que
-     bloquee el scroll y el aviso sobra. Además, sin la caja fijada como
-     referencia, se iría al final de toda la sección. */
-  html.js-activo:not(.motion-reducido) .aviso-sigue {
-    display: none;
   }
 }
 
