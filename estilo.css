@@ -796,6 +796,66 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
   transform: scale(1.3);
 }
 
+/* Aviso de "sigue deslizando".
+   Al quedarse la sección fijada, varias personas creyeron que la web se
+   acababa ahí. Este aviso aparece mientras el escenario está fijado y aún
+   quedan pasos por ver, y se retira en el último, cuando el scroll vuelve a
+   comportarse como siempre.
+   Fuera del modo fijado (sin JS, con "menos movimiento" o en pantallas muy
+   bajas) no pinta nada, porque ahí no hay nada que bloquee el scroll. */
+.aviso-sigue {
+  display: none;
+}
+
+html.js-activo:not(.motion-reducido) .aviso-sigue {
+  position: absolute;
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 0.5rem);
+  transition:
+    opacity 0.6s var(--paso),
+    transform 0.6s var(--paso);
+  pointer-events: none;
+}
+
+html.js-activo:not(.motion-reducido) .aviso-sigue.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.aviso-sigue-linea {
+  width: 1px;
+  height: 2.2rem;
+  background: linear-gradient(var(--tinta), transparent);
+  transform-origin: top;
+  animation: seguir-bajando 2.4s ease-in-out infinite;
+}
+
+@keyframes seguir-bajando {
+  0% {
+    transform: scaleY(0.15);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
 /* ---------- 04 · Áreas ---------- */
 
 .rejilla-areas {
@@ -1024,6 +1084,13 @@ html.js-activo:not(.motion-reducido) .pasos-indicador span.activo {
 
   html.js-activo:not(.motion-reducido) #como-trabajo .retrato img {
     max-height: none;
+  }
+
+  /* Aquí el escenario deja de estar fijado, así que no hay nada que
+     bloquee el scroll y el aviso sobra. Además, sin la caja fijada como
+     referencia, se iría al final de toda la sección. */
+  html.js-activo:not(.motion-reducido) .aviso-sigue {
+    display: none;
   }
 }
 

@@ -51,6 +51,7 @@
         escenarioPasos.querySelectorAll(".pasos-indicador span"),
       )
     : [];
+  var avisoSigue = document.getElementById("aviso-sigue");
 
   var menuAbierto = false;
 
@@ -415,6 +416,15 @@
     indicadoresPaso.forEach(function (el, i) {
       el.classList.toggle("activo", i === indicePaso);
     });
+
+    /* El aviso de seguir deslizando solo mientras quedan pasos por delante:
+       en el último ya no hay nada que esperar y el scroll sigue su curso. */
+    if (avisoSigue) {
+      avisoSigue.classList.toggle(
+        "visible",
+        progreso > 0.01 && indicePaso < ultimo,
+      );
+    }
   }
 
   /* ---------------------------------------------------------
