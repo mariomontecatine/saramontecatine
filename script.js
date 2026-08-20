@@ -477,13 +477,70 @@
       videoFondo.removeAttribute("autoplay");
       videoFondo.pause();
     } else {
-      /* Algunos navegadores no hacen caso al atributo autoplay hasta que se
-         les pide por código. Va en silencio, que es lo que exigen todos
-         para dejar arrancar solo; si aun así lo bloquean, no pasa nada:
-         queda el color de fondo de siempre. */
-      var arranca = videoFondo.play();
-      if (arranca && typeof arranca.catch === "function") {
-        arranca.catch(function () {});
+      /* Safari en iOS solo deja arrancar solo si el vídeo está silenciado, y
+         no le basta el atributo del HTML: hay que dejarlo dicho también por
+         código, antes de pedir la reproducción. */
+      videoFondo.muted = true;
+      videoFondo.defaultMuted = true;
+
+      var pidiendo = false;
+
+      function intentarVideo() {
+        if (pidiendo || !videoFondo.paused) return;
+        pidiendo = true;
+        var p = videoFondo.play();
+        if (p && typeof p.then === "function") {
+          p.then(
+            function () {
+              pidiendo = false;
+            },
+            function () {
+              pidiendo = false;
+            },
+          );
+        } else {
+          pidiendo = false;
+        }
+      }
+
+      intentarVideo();
+
+      /* Un solo intento no basta en iOS: puede rechazarlo porque aún no tiene
+         metadatos, porque la pestaña está en segundo plano o porque el móvil
+         está en modo de bajo consumo, que veta la reproducción automática
+         hasta que la persona toca la pantalla. Así que reintentamos en cada
+         una de esas ocasiones. Si nunca llega a arrancar, queda el primer
+         fotograma como imagen fija y la sección no se ve vacía. */
+      videoFondo.addEventListener("loadeddata", intentarVideo);
+      videoFondo.addEventListener("canplay", intentarVideo);
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) intentarVideo();
+      });
+
+      var gestos = ["touchstart", "pointerdown", "click", "keydown"];
+      gestos.forEach(function (ev) {
+        window.addEventListener(ev, intentarVideo, { passive: true });
+      });
+      videoFondo.addEventListener("playing", function () {
+        /* Ya está en marcha: dejamos de escuchar gestos. */
+        gestos.forEach(function (ev) {
+          window.removeEventListener(ev, intentarVideo);
+        });
+      });
+
+      /* Fuera de la sección no pinta nada corriendo: se para para ahorrar
+         batería y datos, y se retoma al volver a entrar. */
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(
+          function (entradas) {
+            entradas.forEach(function (en) {
+              if (en.isIntersecting) intentarVideo();
+              else videoFondo.pause();
+            });
+          },
+          { rootMargin: "300px 0px" },
+        ).observe(videoFondo);
       }
     }
   }
