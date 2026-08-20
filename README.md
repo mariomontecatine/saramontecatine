@@ -10,12 +10,18 @@ con menú hamburguesa lateral para saltar entre ellas.
 
 ## Texto que falta por revisar
 
-El texto de **Quién soy** y los datos de contacto son los tuyos, tal cual me los pasaste.
-Lo que sigue lo he redactado yo de relleno y hay que revisarlo antes de publicar:
+Son de Sara, tal cual los pasó: **Quién soy**, los cuatro párrafos de **Cómo trabajo**,
+la descripción de los tres pasos y los datos de contacto.
 
-- **Cómo trabajo**: el titular y los tres pasos (`index.html`, sección `#como-trabajo`).
-- **En qué puedo ayudarte**: las seis áreas y sus descripciones (`#ayuda`).
-- Los reclamos de portada y de contacto.
+Lo que sigue lo he redactado yo de relleno y conviene revisarlo antes de publicar:
+
+- **Cómo trabajo** (`#como-trabajo`): los tres títulos de los pasos, no su texto.
+- **En qué puedo ayudarte** (`#ayuda`): los ocho títulos de área y sus descripciones.
+  Las de *obsesiones y compulsiones*, *eventos traumáticos* y *autoestima e identidad*
+  son las más recientes y las que menos se han mirado.
+- El reclamo de portada («Terapia presencial en Sevilla y online») y el titular de
+  contacto («¿Damos el primer paso?»).
+- El número de colegiada aparece dos veces, en `#quien-soy` y en el pie.
 
 ## Estructura
 
