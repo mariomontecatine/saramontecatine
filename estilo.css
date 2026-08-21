@@ -542,6 +542,22 @@ a:hover {
   mix-blend-mode: multiply;
 }
 
+/* La ilustración se funde en multiply para que su fondo blanco desaparezca
+   sobre el lavanda. El detalle: mientras dura la animación de entrada, la
+   opacidad de .reveal crea un contexto de apilado que aísla la mezcla, y al
+   llegar a opacidad 1 ese contexto desaparece de golpe y el multiply pasa a
+   aplicarse contra la sección. Eso es lo que se veía como una sombra que
+   entraba de repente al deslizar. Se arregla aislando siempre la mezcla y
+   dándole al figure el mismo fondo que hay detrás: el resultado final es
+   idéntico, pero constante desde el primer fotograma.
+
+   Solo hace falta en Contacto: en "Cómo trabajo" la ilustración ya va dentro
+   de un contenedor sticky, que aísla la mezcla por su cuenta. */
+#contacto .retrato.ilustracion {
+  isolation: isolate;
+  background-color: var(--papel);
+}
+
 /* Solo la foto de "Quién soy" se queda quieta mientras el texto sigue
    subiendo: en "Cómo trabajo" y "Contacto" la imagen es más corta que su
    columna de texto y quedaba pegada solo un instante, como un tirón. */
